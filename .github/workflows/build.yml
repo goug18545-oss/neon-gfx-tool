@@ -36,7 +36,10 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get install -y python3-pip python3-venv git zip unzip build-essential autoconf libtool pkg-config zlib1g-dev libncurses5-dev libffi-dev libssl-dev
-          
+      - name: Check Android AIDL
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          find /usr -type f -name aidl 2>/dev/null          
       - name: Build APK
         run: |
           python3 -m venv .venv
