@@ -20,8 +20,15 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Install Android SDK
+            - name: Install Android SDK
         run: |
+          sudo apt-get update
+          sudo apt-get install -y android-sdk
+          SDK_DIR=/usr/lib/android-sdk
+          echo "ANDROID_HOME=$SDK_DIR" >> "$GITHUB_ENV"
+          echo "$SDK_DIR/build-tools/35.0.0" >> "$GITHUB_PATH"
+          find "$SDK_DIR" -name aidl -type f
+
           sudo apt-get update
           sudo apt-get install -y android-sdk android-sdk-build-tools
           echo "ANDROID_HOME=/usr/lib/android-sdk" >> "$GITHUB_ENV"
