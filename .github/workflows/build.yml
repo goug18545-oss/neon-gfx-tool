@@ -21,28 +21,32 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Install Android SDK
+      - name: Install Android SDK for Buildozer
         run: |
-          export ANDROID_HOME=/usr/local/lib/android/sdk
-          echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
-          echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
-          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" \
+          SDK_ROOT="$HOME/.buildozer/android/platform/android-sdk"
+          SDKMANAGER="/usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager"
+
+          mkdir -p "$SDK_ROOT"
+          echo "ANDROID_HOME=$SDK_ROOT" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$SDK_ROOT" >> "$GITHUB_ENV"
+          echo "$SDK_ROOT/platform-tools" >> "$GITHUB_PATH"
+          echo "$SDK_ROOT/build-tools/35.0.0" >> "$GITHUB_PATH"
+
+          yes | "$SDKMANAGER" --sdk_root="$SDK_ROOT" --licenses
+
+          "$SDKMANAGER" --sdk_root="$SDK_ROOT" --install \
+            "cmdline-tools;latest" \
             "platform-tools" \
             "platforms;android-35" \
             "build-tools;35.0.0"
-          echo "$ANDROID_HOME/build-tools/35.0.0" >> "$GITHUB_PATH"
+
+          test -x "$SDK_ROOT/build-tools/35.0.0/aidl"
+          echo "AIDL found at $SDK_ROOT/build-tools/35.0.0/aidl"
 
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y python3-pip python3-venv git zip unzip build-essential autoconf libtool pkg-config zlib1g-dev libncurses5-dev libffi-dev libssl-dev
-
-      - name: Check AIDL
-        run: |
-          echo "ANDROID_HOME=$ANDROID_HOME"
-          ls -la "$ANDROID_HOME/build-tools" || true
-          find "$ANDROID_HOME" -type f -name aidl -print
 
       - name: Build APK
         run: |
@@ -57,3 +61,4 @@ jobs:
         with:
           name: NEON-GFX-TOOL-APK
           path: bin/*.apk
+          
