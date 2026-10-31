@@ -40,7 +40,11 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y python3-pip python3-venv git zip unzip build-essential autoconf libtool pkg-config zlib1g-dev libncurses5-dev libffi-dev libssl-dev
-
+            - name: Check AIDL
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          ls -la "$ANDROID_HOME/build-tools" || true
+          find "$ANDROID_HOME" -type f -name aidl -print
       - name: Build APK
         run: |
           python3 -m venv .venv
